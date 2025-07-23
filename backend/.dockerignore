@@ -1,0 +1,37 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Don't include ChromaDB data in Docker image
+# app/chroma_store/
+
+# Virtual environment
+.venv/
+
+# IDE/editor files
+.idea/
+.vscode/
+
+# Git + metadata
+.git/
+.gitignore
+
+
+# Notebooks / cache
+*.ipynb
+*.ipynb_checkpoints
+
+# Test / log / debug
+*.log
+tests/
+*.md
+
+# Build & deployment
+Dockerfile
+buildspec.yml
+docker-compose.yml
+
+# Optional: if your model is downloaded and you don’t want to bake it in
+~/.cache/
+root/.cache/

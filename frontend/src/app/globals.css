@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    --sidebar-background: 48, 14%, 94%; /* Light mode palette */
+    --sidebar-foreground: 210, 67%, 27%; /* Contrasting text color */
+    --sidebar-primary: 210, 85%, 15%;
+    --sidebar-primary-foreground: 200, 20%, 75%; /* Contrasting text color */
+    --sidebar-accent: 40, 50%, 87%;
+    --sidebar-accent-foreground: 210, 67%, 37%; /* Contrasting text color */
+    --sidebar-border: 220, 13%, 91%;
+    --sidebar-ring: 217.2, 91.2%, 59.8%;
+    --background: 45, 50%, 97%;
+    --foreground: 220, 60%, 27%; /* Contrasting text color */
+    --card: 40, 15%, 88%;
+    --card-foreground: 220, 60%, 27%; /* Contrasting text color */
+    --popover: 48, 14%, 94%;
+    --popover-foreground: 210, 67%, 27%; /* Contrasting text color */
+    --primary: 210, 85%, 15%; 
+    --primary-foreground: 200, 20%, 75%; /* Contrasting text color */
+    --secondary: 200, 25%, 70%;
+    --secondary-foreground: 210, 67%, 27%; /* Contrasting text color */
+    --muted: 40, 50%, 87%;
+    --muted-foreground: 210, 67%, 37%; /* Contrasting text color */
+    --accent: 180, 30%, 75%;
+    --accent-foreground: 210, 85%, 15%; /* Contrasting text color */
+    --destructive: 357.18 100% 45%;
+    --destructive-foreground: 0, 100%, 96%; /* Contrasting text color */
+    --border: 40, 15%, 88%;
+    --input: 40, 15%, 88%;
+    --ring: 220, 60%, 27%; /* Contrasting color */
+    --chart-1: 12, 76%, 61%;
+    --chart-2: 173, 58%, 39%;
+    --chart-3: 197, 37%, 24%;
+    --chart-4: 43, 74%, 66%;
+    --chart-5: 27, 87%, 67%;
+  }
+  .dark {
+    --sidebar-background: 200, 50%, 75%;  /* Dark mode palette */
+    --sidebar-foreground: 210, 85%, 15%; /* Contrasting text color */
+    --sidebar-primary: 210, 67%, 27%;
+    --sidebar-primary-foreground: 200, 50%, 75%;  /* Contrasting text color */
+    --sidebar-accent: 220, 60%, 27%;
+    --sidebar-accent-foreground: 200, 50%, 75%; /* Contrasting text color */
+    --sidebar-border: 240, 3.7%, 15.9%;
+    --sidebar-ring: 217.2, 91.2%, 59.8%;
+    --background: 210, 85%, 15%;
+    --foreground: 200, 50%, 75%; /* Contrasting text color */
+    --card: 220, 60%, 27%;
+    --card-foreground: 200, 50%, 75%; /* Contrasting text color */
+    --popover: 210, 67%, 27%;
+    --popover-foreground: 200, 50%, 75%; /* Contrasting text color */
+    --primary: 200, 50%, 75%;
+    --primary-foreground: 210, 67%, 37%; /* Contrasting text color */
+    --secondary: 210, 60%, 40%;
+    --secondary-foreground: 200, 50%, 75%; /* Contrasting text color */
+    --muted: 220, 60%, 27%;
+    --muted-foreground: 200, 50%, 75%; /* Contrasting text color */
+    --accent: 230, 50%, 50%;
+    --accent-foreground: 200, 50%, 75%; /* Contrasting text color */
+    --destructive: 357.18 100% 45%;
+    --destructive-foreground: 0, 100%, 96%; /* Contrasting text color */
+    --border: 220, 60%, 27%;
+    --input: 220, 60%, 27%;
+    --ring: 200, 50%, 75%; /* Contrasting color */
+    --chart-1: 220, 70%, 50%;
+    --chart-2: 160, 60%, 45%;
+    --chart-3: 30, 80%, 55%;
+    --chart-4: 280, 65%, 60%;
+    --chart-5: 340, 75%, 55%;
+    --chart-primary: 210, 67%, 37%; 
+  }
+} 
+
+
+:root {
+  color-scheme: light dark;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

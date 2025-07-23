@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Backend Task Definition Template
+
+Resources:
+  CULITaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Tags:
+        - Key: project
+          Value: culi
+
+  CULIBackendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: culi-backend-task
+      NetworkMode: bridge
+      RequiresCompatibilities: [EC2]
+      ExecutionRoleArn: !GetAtt CULITaskExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: production_backend
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/culi-prod/backend:latest"
+          PortMappings:
+            - ContainerPort: 8000
+              HostPort: 8000
+          Cpu: 512
+          Memory: 1300
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: /ecs/culi
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: backend

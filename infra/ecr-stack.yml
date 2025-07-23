@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "ECR repositories for CULI project"
+
+Resources:
+  CULIFrontendRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: culi-prod/frontend
+      Tags:
+        - Key: project
+          Value: culi
+
+  CULIBackendRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: culi-prod/backend
+      Tags:
+        - Key: project
+          Value: culi
+
+Outputs:
+  FrontendRepoUri:
+    Description: URI for frontend repo
+    Value: !GetAtt CULIFrontendRepo.RepositoryUri
+
+  BackendRepoUri:
+    Description: URI for backend repo
+    Value: !GetAtt CULIBackendRepo.RepositoryUri

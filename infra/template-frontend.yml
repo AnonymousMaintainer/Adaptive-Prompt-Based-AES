@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Frontend Task Definition Template
+
+Resources:
+  CULITaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Tags:
+        - Key: project
+          Value: culi
+
+  CULIFrontendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: culi-frontend-task
+      NetworkMode: bridge
+      RequiresCompatibilities: [EC2]
+      ExecutionRoleArn: !GetAtt CULITaskExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: production_frontend
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/culi-prod/frontend:latest"
+          PortMappings:
+            - ContainerPort: 3000
+              HostPort: 3000
+          Cpu: 256
+          Memory: 512
+          LogConfiguration:
+              LogDriver: awslogs
+              Options:
+                awslogs-group: /ecs/culi
+                awslogs-region: !Ref AWS::Region
+                awslogs-stream-prefix: frontend

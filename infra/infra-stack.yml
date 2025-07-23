@@ -1,0 +1,259 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Simplified VPC ECS EC2 cluster for CULI project with a single instance and Elastic IP"
+
+Parameters:
+  VpcCidr:
+    Type: String
+    Default: 10.0.0.0/16
+  PublicSubnet1Cidr:
+    Type: String
+    Default: 10.0.1.0/24
+  EC2InstanceType:
+    Type: String
+    Default: t2.small
+    Description: ECS container instance type
+  EcsDesiredCount:
+    Type: Number
+    Default: 1
+    Description: Desired number of ECS tasks to run
+  EC2InstanceCount:
+    Type: Number
+    Default: 1
+    Description: Number of EC2 instances to launch
+
+Resources:
+  # VPC + Networking
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: CULI-VPC
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: CULI-IGW
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: CULI-Public-RT
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnet1Cidr
+      MapPublicIpOnLaunch: true
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: !Ref AWS::Region
+      Tags:
+        - Key: Name
+          Value: CULI-Public-Subnet-1
+
+  SubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+
+  # Security Group
+  CULIEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP inbound to EC2 instance
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8000
+          ToPort: 8000
+          CidrIp: 0.0.0.0/0  
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: project
+          Value: culi
+        - Key: Name
+          Value: CULI-EC2-SG
+          
+  # CloudWatch Log Group
+  CULICloudWatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /ecs/culi
+      RetentionInDays: 7
+
+  # ECS Cluster and EC2 Instance
+  CULICluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: CULI-Cluster
+      Tags:
+        - Key: project
+          Value: culi
+
+  # IAM Roles
+  CULITaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Tags:
+        - Key: project
+          Value: culi
+
+  ECSInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+      Tags:
+        - Key: project
+          Value: culi
+
+  ECSInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref ECSInstanceRole]
+
+  # EC2 Instance for ECS
+  ECSInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: "{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}" # ECS-optimized AMI via SSM
+      InstanceType: !Ref EC2InstanceType
+      IamInstanceProfile: !Ref ECSInstanceProfile
+      SecurityGroupIds:
+        - !Ref CULIEC2SecurityGroup
+      SubnetId: !Ref PublicSubnet1
+      Tags:
+        - Key: project
+          Value: culi
+        - Key: Name
+          Value: CULI-EC2-Instance
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo ECS_CLUSTER=${CULICluster} >> /etc/ecs/ecs.config
+
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref ECSInstance
+
+  CULIFrontendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: culi-frontend-task
+      NetworkMode: bridge
+      RequiresCompatibilities: [EC2]
+      ExecutionRoleArn: !GetAtt CULITaskExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: placeholder_frontend
+          Image: public.ecr.aws/docker/library/busybox:latest
+          Cpu: 10
+          Memory: 10
+          Command: ["sleep", "3600"]
+
+  CULIBackendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: culi-backend-task
+      NetworkMode: bridge
+      RequiresCompatibilities: [EC2]
+      ExecutionRoleArn: !GetAtt CULITaskExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: placeholder_backend
+          Image: public.ecr.aws/docker/library/busybox:latest
+          Cpu: 10
+          Memory: 10
+          Command: ["sleep", "3600"]
+
+  CULIFrontendService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: CULI-Frontend-Service
+      Cluster: !Ref CULICluster
+      TaskDefinition: !Ref CULIFrontendTaskDefinition
+      DesiredCount: !Ref EcsDesiredCount
+      LaunchType: EC2
+      Tags:
+        - Key: project
+          Value: culi
+        - Key: Name
+          Value: CULI-Frontend-Service
+
+  CULIBackendService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: CULI-Backend-Service
+      Cluster: !Ref CULICluster
+      TaskDefinition: !Ref CULIBackendTaskDefinition
+      DesiredCount: !Ref EcsDesiredCount
+      LaunchType: EC2
+      Tags:
+        - Key: project
+          Value: culi
+        - Key: Name
+          Value: CULI-Backend-Service
+
+Outputs:
+  PublicIP:
+    Description: Public IP of the ECS EC2 Instance
+    Value: !Ref ElasticIP
+
+  ECSClusterName:
+    Description: Name of the ECS Cluster
+    Value: !Ref CULICluster
+
+  FrontendTaskDefinitionArn:
+    Description: Task Definition ARN for the Frontend
+    Value: !Ref CULIFrontendTaskDefinition
+
+  BackendTaskDefinitionArn:
+    Description: Task Definition ARN for the Backend
+    Value: !Ref CULIBackendTaskDefinition

@@ -1,0 +1,7 @@
+{
+  "frontend_ecr": "661388510615.dkr.ecr.us-east-1.amazonaws.com/culi-prod/frontend",
+  "backend_ecr": "661388510615.dkr.ecr.us-east-1.amazonaws.com/culi-prod/backend",
+  "cloudformation_stack_name": "CULI-Stack",
+  "cloudformation_template": "./infra/ecs-stack.yml",
+  "region": "us-east-1"
+}

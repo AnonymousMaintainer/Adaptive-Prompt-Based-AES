@@ -17,10 +17,6 @@ from app.core import vectordb
 # Load environment variables
 load_dotenv(override=True)
 
-# Verify SECRET_KEY is loaded
-if not os.getenv("SECRET_KEY"):
-    raise ValueError("SECRET_KEY environment variable is not set")
-
 def custom_generate_unique_id(route: APIRouter) -> str:
     return f'{route.tags[0]}-{route.name}'
 

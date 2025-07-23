@@ -1642,7 +1642,7 @@ __turbopack_context__.s({
 });
 async function fetchExamStats(token) {
     // Ensure BASE_BACKEND_URL uses the proper protocol (http/https) that matches your server setup
-    const url = `${("TURBOPACK compile-time value", "https://mg27gikumw.us-east-1.awsapprunner.com/")}/api/v1/stats/project/all`;
+    const url = `${("TURBOPACK compile-time value", "http://3.211.184.206:8000")}/api/v1/stats/project/all`;
     try {
         const response = await fetch(url, {
             method: "GET",
@@ -1713,7 +1713,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$do
 ;
 __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$dotenv$40$16$2e$5$2e$0$2f$node_modules$2f$dotenv$2f$lib$2f$main$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].config();
 async function getToken(username, password) {
-    const url = `${("TURBOPACK compile-time value", "https://mg27gikumw.us-east-1.awsapprunner.com/")}/api/v1/auth/token`;
+    const url = `${("TURBOPACK compile-time value", "http://3.211.184.206:8000")}/api/v1/auth/token`;
     const params = new URLSearchParams({
         grant_type: "password",
         username,
@@ -1754,7 +1754,7 @@ async function getToken(username, password) {
     }
 }
 async function verifyToken(token) {
-    const url = `${("TURBOPACK compile-time value", "https://mg27gikumw.us-east-1.awsapprunner.com/")}/api/v1/users/me`;
+    const url = `${("TURBOPACK compile-time value", "http://3.211.184.206:8000")}/api/v1/users/me`;
     try {
         const response = await fetch(url, {
             method: "GET",
@@ -1805,7 +1805,7 @@ async function isAdmin(token) {
     return userInfo.role === "admin";
 }
 async function updateProfile(token, profileData) {
-    const url = `${("TURBOPACK compile-time value", "https://mg27gikumw.us-east-1.awsapprunner.com/")}/api/v1/users/settings/profile`;
+    const url = `${("TURBOPACK compile-time value", "http://3.211.184.206:8000")}/api/v1/users/settings/profile`;
     try {
         const response = await fetch(url, {
             method: "PUT",
@@ -1829,7 +1829,7 @@ async function updateProfile(token, profileData) {
     }
 }
 async function updatePassword(token, passwordData) {
-    const url = `${("TURBOPACK compile-time value", "https://mg27gikumw.us-east-1.awsapprunner.com/")}/api/v1/users/settings/password`;
+    const url = `${("TURBOPACK compile-time value", "http://3.211.184.206:8000")}/api/v1/users/settings/password`;
     try {
         const response = await fetch(url, {
             method: "PUT",

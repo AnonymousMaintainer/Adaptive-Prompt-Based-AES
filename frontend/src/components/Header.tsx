@@ -16,8 +16,15 @@ const Header: React.FC<HeaderProps> = ({ href, page, slug, slug_page }) => {
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
       <div className="flex items-center gap-2">
-        <SidebarTrigger />
+        <SidebarTrigger data-tour="sidebar-toggle" />
         <Separator orientation="vertical" className="h-6" />
+        {/* Test Onboarding Tour Trigger */}
+        {/* <button
+          className="text-sm text-primary-500 hover:underline"
+          onClick={() => window.dispatchEvent(new Event("startOnboarding"))}
+        >
+          Start Tour
+        </button> */}
       </div>
       <div className="flex flex-1 items-center justify-between space-x-2">
         <HeaderCrumbs
@@ -27,8 +34,8 @@ const Header: React.FC<HeaderProps> = ({ href, page, slug, slug_page }) => {
           slug={slug}
         />
         {/* <ProfileMenuSettings /> */}
-        <ModeToggle />
-        <LogoutButton />
+        <ModeToggle data-tour="mode-toggle" />
+        <LogoutButton data-tour="logout-button" />
       </div>
     </header>
   );

@@ -37,7 +37,6 @@ export default function Home() {
 
       try {
         const username = sessionStorage.getItem("username") || "User";
-        console.log(token ? "Token Fetch Success" : "Token Fetch Failed");
 
         const fetchedStats = await fetchExamStats(token);
         if (!fetchedStats) {
@@ -54,7 +53,6 @@ export default function Home() {
           });
           return;
         }
-        console.log(fetchedStats);
         setStats(fetchedStats as ExamStatsResponse);
 
         setTeacherName(username);
@@ -107,7 +105,10 @@ export default function Home() {
 
         <div className="container mx-auto p-4">
           <CardHeader>
-            <CardTitle className="text-4xl text-primary font-bold flex items-center ">
+            <CardTitle
+              data-tour="dashboard-title"
+              className="text-4xl text-primary font-bold flex items-center "
+            >
               Welcome back, {teacherName}!
             </CardTitle>
             <CardDescription className="text-lg text-secondary-foreground">
@@ -157,22 +158,28 @@ export default function Home() {
                     </h3>
                   </div>
                   <div className="space-y-4">
-                    {announcements.map((announcement) => (
-                      <div
-                        key={announcement.id}
-                        className="border-b pb-4 last:border-0"
-                      >
-                        <h4 className="font-medium text-card-foreground">
-                          {announcement.title}
-                        </h4>
-                        <p className="text-sm text-card-foreground mt-1">
-                          {announcement.content}
-                        </p>
-                        <p className="text-xs text-card-foreground opacity-75 mt-2">
-                          {announcement.date}
-                        </p>
+                    {announcements.length > 0 ? (
+                      announcements.map((announcement) => (
+                        <div
+                          key={announcement.id}
+                          className="border-b pb-4 last:border-0"
+                        >
+                          <h4 className="font-medium text-card-foreground">
+                            {announcement.title}
+                          </h4>
+                          <p className="text-sm text-card-foreground mt-1">
+                            {announcement.content}
+                          </p>
+                          <p className="text-xs text-card-foreground opacity-75 mt-2">
+                            {announcement.date}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-left text-card-foreground">
+                        No announcements available.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
 

@@ -9,8 +9,12 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
-const LogoutButton = () => {
+const LogoutButton = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof Button>) => {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = () => {
@@ -22,8 +26,9 @@ const LogoutButton = () => {
   return (
     <>
       <Button
+        {...props}
         variant="ghost"
-        className="relative h-8 w-8 rounded-full"
+        className={cn("relative h-8 w-8 rounded-full", className)}
         onClick={() => setShowLogoutConfirm(true)}
       >
         <LogOut className="h-5 w-5" />

@@ -88,10 +88,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <NotepadText className="size-4" />
                       </div>
                       <div className="flex flex-col gap-0.5 leading-none">
-                        <span className="font-semibold">
-                          CULI Essay Checker
-                        </span>
-                        <span className="">v0.4.1</span>
+                        <span className="font-semibold text-md">Ezzay </span>
+                        <span className="text-xs">Easy Essay Scoring Tool</span>
                       </div>
                     </a>
                   </SidebarMenuButton>
@@ -143,7 +141,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenu>
 
                 <div className="flex w-full place-content-center align-middle mt-10">
-                  <p className="text-sm font-bold">Made by CULI</p>
+                  <p className="text-md font-bold">Made by CULI</p>
+                </div>
+                <div className="flex w-full place-content-center align-middle">
+                  <p className="text-sm">v1.0.1</p>
                 </div>
               </SidebarGroup>
             </SidebarContent>

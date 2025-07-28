@@ -5,15 +5,15 @@ set -e
 echo "===  Starting Full CULI Deployment ==="
 
 # Optional: Check and install dependencies
-# ./scripts/dependency.sh
+./scripts/dependency.sh
 
-# ./scripts/infra_initiate.sh
+./scripts/infra_initiate.sh
 
-# ./scripts/generate_env.sh
+./scripts/generate_env.sh
 
-# ./scripts/ecr_initiate.sh
+./scripts/ecr_initiate.sh
 
-# ./scripts/image_upload.sh
+./scripts/image_upload.sh
 
 ./scripts/update_env.sh
 

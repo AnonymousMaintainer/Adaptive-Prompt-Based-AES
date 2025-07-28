@@ -7,6 +7,7 @@ import { LoginSessionProvider } from "@/context/LoginSessionContext";
 import { AuthWrapper } from "@/components/AuthWrapper";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import OnboardingTour from "@/components/OnboardingTour";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,7 +43,10 @@ export default function RootLayout({
           <LoginSessionProvider>
             <SidebarProvider>
               <AppSidebar />
-              <AuthWrapper>{children}</AuthWrapper>
+              <AuthWrapper>
+                <OnboardingTour />
+                {children}
+              </AuthWrapper>
             </SidebarProvider>
           </LoginSessionProvider>
         </ThemeProvider>

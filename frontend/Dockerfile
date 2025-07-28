@@ -1,6 +1,6 @@
 # Use official Node.js image
 FROM public.ecr.aws/docker/library/node:18-alpine AS base
-# FROM node:18-alpine AS base
+
 # Install pnpm
 RUN npm install -g pnpm
 
@@ -10,9 +10,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies
-
-COPY package.json ./
-COPY pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile
 
 # Build the application
@@ -54,6 +52,6 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT=3000
-# ENV BASE_BACKEND_URL=https://mg27gikumw.us-east-1.awsapprunner.com
+ENV BASE_BACKEND_URL=https://mg27gikumw.us-east-1.awsapprunner.com
 
 CMD ["node", "server.js"]

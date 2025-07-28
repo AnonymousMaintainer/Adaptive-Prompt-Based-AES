@@ -6,7 +6,7 @@ from sqlmodel import select
 from ...core import database, security
 from ...schemas import vector_schema
 from ...models import exam_model
-from ...schemas import user_schema
+from ...schemas import user_schema, exam_schema
 from ...core.vectordb import chroma_client, essay_collection, build_collection
 
 import logging
@@ -129,6 +129,14 @@ def embed_batch_exams(
                 exam_id=exam_id,
                 status=vector_schema.EmbedStatusEnum.failed,
                 detail="Missing extracted text"
+            ))
+            continue
+
+        if exam.status != exam_schema.StatusEnum.processed:
+            results.append(vector_schema.EmbedResult(
+                exam_id=exam_id,
+                status=vector_schema.EmbedStatusEnum.processed,
+                detail="Exam is not processed"
             ))
             continue
 

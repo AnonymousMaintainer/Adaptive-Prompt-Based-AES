@@ -37,3 +37,9 @@ export interface NewPassword {
 export interface ResponseNewPassword {
   message: string;
 }
+
+export type User = {
+  id: number;
+  username: string;
+  created_at: string;
+}

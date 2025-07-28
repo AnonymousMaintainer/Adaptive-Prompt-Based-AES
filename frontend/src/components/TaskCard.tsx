@@ -8,6 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Clock, User, FileText } from "lucide-react";
 import Link from "next/link";
+import React from "react";
 
 interface TaskCardProps {
   exam: {

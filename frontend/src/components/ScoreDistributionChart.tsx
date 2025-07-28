@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "motion/react";
 import {
   BarChart,
@@ -24,7 +25,15 @@ const dummyData = [
   { score: 10, count: 7 },
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active: boolean;
+  payload: { value: string }[];
+  label: number | string;
+}) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-card p-2 border border-accent rounded shadow-sm">
@@ -37,7 +46,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 interface ScoreDistributionChartProps {
-  scoreDistribution: number[];
+  scoreDistribution: { score: number; count: number }[];
 }
 
 export default function ScoreDistributionChart({
@@ -86,7 +95,9 @@ export default function ScoreDistributionChart({
               tick={{ fill: "hsl(var(--foreground))" }}
               axisLine={{ stroke: "hsl(var(--foreground))" }}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip
+              content={<CustomTooltip active={false} payload={[]} label={""} />}
+            />
             <Bar
               dataKey="count"
               fill="url(#primaryToAccent)"

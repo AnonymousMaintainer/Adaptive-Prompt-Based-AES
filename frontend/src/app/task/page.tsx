@@ -134,10 +134,15 @@ const TaskManagementPage = () => {
           <CardContent>
             <Tabs value={tabState}>
               <TabsList>
-                <TabsTrigger value="list" onClick={() => setTabState("list")}>
+                <TabsTrigger
+                  data-tour="task-list-tab"
+                  value="list"
+                  onClick={() => setTabState("list")}
+                >
                   Task List
                 </TabsTrigger>
                 <TabsTrigger
+                  data-tour="task-create-tab"
                   value="create"
                   onClick={() => setTabState("create")}
                 >
@@ -339,7 +344,7 @@ ${taskData.student_instruction}`;
   const years = Array.from({ length: 11 }, (_, i) => currentYear + i);
 
   return (
-    <Card>
+    <Card data-tour="task-form">
       <CardHeader>
         <CardTitle>{initialData ? "Edit Task" : "Create New Task"}</CardTitle>
         <CardDescription>

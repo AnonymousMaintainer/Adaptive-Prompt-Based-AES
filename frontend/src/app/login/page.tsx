@@ -33,10 +33,9 @@ export default function LoginPage() {
     // const token = { data: "bypass" }; // For testing purposes, replace with actual token retrieval logic
 
     const token = await getToken(username, password);
-    if (token && token.status === 201) {
-      setToken(token.data);
+    if (token && token.status === 201 && token.access_token) {
+      setToken(token.access_token);
       sessionStorage.setItem("login_successful", "true"); // Set login success flag
-      // console.log("Login successful:", token.data); // For Debugging
     } else if (token && token.status === 404) {
       setErrorVisible(true);
     }

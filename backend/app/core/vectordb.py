@@ -1,26 +1,29 @@
-import hashlib
+from chromadb import PersistentClient
+from chromadb.utils import embedding_functions
+from sentence_transformers import SentenceTransformer
+from typing import Literal
 
-from chromadb import Client, PersistentClient
-from chromadb.config import Settings
+class LocalEmbeddingFunction:
+    def __init__(self, model_path_or_name: str):
+        self.model = SentenceTransformer(model_path_or_name)
 
-from ..utils.embedding import get_embedding_function
-from ..core.config import settings  # if your config class has model path info
+    def embed_documents(self, texts):
+        return self.model.encode(texts, convert_to_tensor=False).tolist()
 
-# Initialize ChromaDB client with persistence
-chroma_client = PersistentClient(path="app/chroma_store")
+    def embed_query(self, text):
+        return self.model.encode([text], convert_to_tensor=False)[0].tolist()
 
-# Setup embedding function
-embedding_fn = get_embedding_function(
-    source="huggingface",
-    model_path_or_name="all-mpnet-base-v2",
-)
 
-# Load or create collection
-essay_collection = chroma_client.get_or_create_collection(
-    name="essays",
-    embedding_function=embedding_fn,
-    metadata={"hnsw:space": "cosine"}
-)
+def get_embedding_function(source: Literal["local", "huggingface"], model_path_or_name: str):
+    if source == "huggingface":
+        return embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=model_path_or_name
+        )
+    elif source == "local":
+        return LocalEmbeddingFunction(model_path_or_name)
+    else:
+        raise ValueError("Invalid source for embedding function")
+
 
 # Insert a document to Vectordb
 def build_collection(exam_id: int, text: str, metadata: dict = None):
@@ -36,3 +39,20 @@ def get_similar_exams(query_text: str, n_results: int = 5):
         query_texts=[query_text],
         n_results=n_results
     )
+
+
+# Initialize ChromaDB client with persistence
+chroma_client = PersistentClient(path="app/chroma_store")
+
+# Setup embedding function
+embedding_fn = get_embedding_function(
+    source="huggingface",
+    model_path_or_name="all-MiniLM-L6-v2",
+)
+
+# Load or create collection
+essay_collection = chroma_client.get_or_create_collection(
+    name="essays",
+    embedding_function=embedding_fn,
+    metadata={"hnsw:space": "cosine"}
+)

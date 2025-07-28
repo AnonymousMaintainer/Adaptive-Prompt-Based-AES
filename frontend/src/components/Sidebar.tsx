@@ -1,14 +1,15 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   HomeIcon,
   DocumentTextIcon,
   ClipboardDocumentListIcon,
   Cog6ToothIcon,
   UserPlusIcon,
-} from "@heroicons/react/24/outline"
+} from "@heroicons/react/24/outline";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
@@ -16,10 +17,10 @@ const navigation = [
   { name: "Tasks", href: "/tasks", icon: ClipboardDocumentListIcon },
   { name: "Settings", href: "/settings", icon: Cog6ToothIcon },
   { name: "Register", href: "/register", icon: UserPlusIcon },
-]
+];
 
 export default function Sidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <div className="flex h-full w-64 flex-col bg-[#EFFAFB] border-r border-[#A2E4F1]">
@@ -28,27 +29,30 @@ export default function Sidebar() {
       </div>
       <nav className="flex-1 space-y-1 px-2 py-4">
         {navigation.map((item) => {
-          const isActive = pathname === item.href
+          const isActive = pathname === item.href;
           return (
             <Link
               key={item.name}
               href={item.href}
               className={`group flex items-center rounded-md px-2 py-2 text-sm font-medium ${
-                isActive ? "bg-[#9EC6FF] text-[#040316]" : "text-[#040316] hover:bg-[#9EC6FF] hover:bg-opacity-75"
+                isActive
+                  ? "bg-[#9EC6FF] text-[#040316]"
+                  : "text-[#040316] hover:bg-[#9EC6FF] hover:bg-opacity-75"
               }`}
             >
               <item.icon
                 className={`mr-3 h-6 w-6 flex-shrink-0 ${
-                  isActive ? "text-[#040316]" : "text-[#040316] group-hover:text-[#040316]"
+                  isActive
+                    ? "text-[#040316]"
+                    : "text-[#040316] group-hover:text-[#040316]"
                 }`}
                 aria-hidden="true"
               />
               {item.name}
             </Link>
-          )
+          );
         })}
       </nav>
     </div>
-  )
+  );
 }
-

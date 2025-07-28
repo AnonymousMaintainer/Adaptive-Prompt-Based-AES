@@ -10,7 +10,6 @@
 !.yarn/releases
 !.yarn/versions
 .pnpm-store/
-pnpm-lock.yaml
 
 rendered-backend.yml
 rendered-frontend.yml
@@ -75,7 +74,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/

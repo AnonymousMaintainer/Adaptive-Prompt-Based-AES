@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image"; // <-- new import
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -58,7 +59,6 @@ export default function PagePreview({
   const [isImageLoading, setIsImageLoading] = useState(true);
 
   const [editedOcrText, setEditedOcrText] = useState("");
-  const [editedScore, setEditedScore] = useState({});
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -137,7 +137,6 @@ export default function PagePreview({
         )
           .then((res) => res.json())
           .then((data) => {
-            console.log("Exam Image JSON:", data);
             if (data && data.exam_image_url) {
               return data.exam_image_url;
             }
@@ -154,7 +153,7 @@ export default function PagePreview({
       setIsImageLoading(false);
     }
     fetchExamImage();
-  }, [currentPage]);
+  }, [currentPage, token]); // <-- added token to dependency
 
   const handlePrevious = () => {
     if (currentPageIndex > 0) {
@@ -173,14 +172,18 @@ export default function PagePreview({
     e.preventDefault();
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isResizing || !containerRef.current) return;
+  // Wrap handleMouseMove using useCallback
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isResizing || !containerRef.current) return;
 
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const newWidth =
-      ((e.clientX - containerRect.left) / containerRect.width) * 100;
-    setPaneWidth(Math.min(Math.max(newWidth, 20), 80));
-  };
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const newWidth =
+        ((e.clientX - containerRect.left) / containerRect.width) * 100;
+      setPaneWidth(Math.min(Math.max(newWidth, 20), 80));
+    },
+    [isResizing]
+  );
 
   const handleMouseUp = () => {
     setIsResizing(false);
@@ -271,7 +274,7 @@ export default function PagePreview({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isResizing]);
+  }, [isResizing, handleMouseMove]);
 
   useEffect(() => {
     if (showDownloadDialog) {
@@ -360,11 +363,15 @@ export default function PagePreview({
             {isImageLoading ? (
               <p className="text-gray-500">Loading image...</p>
             ) : examImage ? (
-              <img
+              // Use Next Image for optimization
+              <Image
                 key={examImage}
                 src={examImage}
                 alt={`Page ${currentPageIndex + 1}`}
                 className="max-w-full max-h-full text-black"
+                width={500}
+                height={600}
+                style={{ objectFit: "contain" }}
               />
             ) : (
               <p className="text-gray-500">No image available.</p>
@@ -440,10 +447,6 @@ export default function PagePreview({
                     "score_task_completion",
                     val
                   );
-                  setEditedScore((prev) => ({
-                    ...prev,
-                    score_task_completion: val,
-                  }));
                 }}
                 className="w-full p-2 border border-primary bg-white text-black rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
@@ -466,10 +469,6 @@ export default function PagePreview({
                     "score_structural_variety_accuracy",
                     val
                   );
-                  setEditedScore((prev) => ({
-                    ...prev,
-                    score_structural_variety_accuracy: val,
-                  }));
                 }}
                 className="w-full p-2 border border-primary bg-white text-black rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
@@ -492,10 +491,6 @@ export default function PagePreview({
                     "score_style_language_expression",
                     val
                   );
-                  setEditedScore((prev) => ({
-                    ...prev,
-                    score_style_language_expression: val,
-                  }));
                 }}
                 className="w-full p-2 border border-primary bg-white text-black rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
@@ -514,10 +509,6 @@ export default function PagePreview({
                   let val = parseFloat(e.target.value);
                   if (val > 2.5) val = 2.5;
                   onScoreUpdate(currentPage.id || 0, "score_organization", val);
-                  setEditedScore((prev) => ({
-                    ...prev,
-                    score_organization: val,
-                  }));
                 }}
                 className="w-full p-2 border border-primary bg-white text-black rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />

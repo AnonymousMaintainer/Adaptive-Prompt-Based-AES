@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PlayIcon } from "lucide-react";
 import Header from "@/components/Header";
@@ -31,7 +31,134 @@ import {
 } from "@/components/ui/dialog";
 import { DialogDescription } from "@radix-ui/react-dialog";
 
-export default function SubprojectPage() {
+function DemoSubprojectPage() {
+  const demoTasks: TaskRead[] = [
+    {
+      id: 1,
+      course_name: "Demo Course",
+      course_code: "DC101",
+      year: "2025",
+      rubrics: "Demo Rubrics",
+      example_evaluation: "Demo Evaluation",
+      student_instruction: "Demo Instructions",
+      created_at: "2025-01-01T00:00:00Z",
+    },
+  ];
+  const demoProject = {
+    id: 0,
+    project_name: "Demo Project",
+    course_name: "Demo Course",
+    section: "A",
+  };
+  const demoPages = [
+    {
+      id: 1,
+      project_id: 0,
+      exam_extracted_text: "Demo OCR Text",
+    },
+  ];
+
+  const [selectedTask, setSelectedTask] = useState<string>(
+    demoTasks[0].id.toString()
+  );
+  const [files, setFiles] = useState<File[]>([]);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [evaluationFinished, setEvaluationFinished] = useState(false);
+  const [showUploader, setShowUploader] = useState(true);
+
+  const handlePDFUpload = (file: File) => {
+    setFiles((prev) => [...prev, file]);
+    setPdfPreviewUrl(URL.createObjectURL(file));
+    setShowUploader(false);
+  };
+
+  const evaluateAllPages = () => setEvaluationFinished(true);
+
+  return (
+    <SidebarInset>
+      <Header
+        page={demoProject.project_name}
+        href="/projects"
+        slug="0"
+        slug_page={demoProject.project_name}
+      />
+      <div className="container mx-auto p-4 space-y-6">
+        <CollapsibleExplanation />
+        <div className="bg-card rounded-lg shadow-sm border p-6">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-card-foreground">
+                {demoProject.project_name}
+              </h2>
+              <p className="text-sm text-card-foreground opacity-75">
+                {demoProject.course_name} - Section {demoProject.section}
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex-1 min-w-[300px]">
+                <select
+                  data-tour="task-list-tab"
+                  value={selectedTask}
+                  onChange={(e) => setSelectedTask(e.target.value)}
+                  className="w-full p-2 border border-primary-foreground bg-card rounded-md focus:outline-none focus:ring-2 focus:ring-[#9EC6FF]"
+                >
+                  <option value="">Select a task prompt</option>
+                  {demoTasks.map((task) => (
+                    <option key={task.id} value={task.id}>
+                      {task.course_name} - {task.course_code} {task.year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Button
+                data-tour="evaluate-button"
+                onClick={evaluateAllPages}
+                disabled={evaluationFinished}
+                className="flex items-center gap-2 bg-accent text-accent-foreground font-bold px-4 py-2 rounded-lg hover:bg-green-500 hover:text-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <PlayIcon className="h-5 w-5" />
+                {evaluationFinished ? "Evaluated" : "Evaluate Exams"}
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="bg-card rounded-lg shadow-sm border p-6">
+          {showUploader && (
+            <div data-tour="file-uploader">
+              <PDFUploader onUpload={handlePDFUpload} />
+            </div>
+          )}
+          {pdfPreviewUrl && (
+            <Card className="pdf-preview mt-4">
+              <CardHeader>
+                <h2 className="text-lg font-semibold text-card-foreground">
+                  PDF Preview
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <iframe
+                  src={pdfPreviewUrl}
+                  title="PDF Preview"
+                  className="w-full h-[1080px]"
+                />
+              </CardContent>
+            </Card>
+          )}
+          {evaluationFinished && files.length > 0 && (
+            <PagePreview
+              pages={demoPages}
+              taskPrompts={demoTasks}
+              onScoreUpdate={() => {}}
+              onOcrTextUpdate={() => {}}
+            />
+          )}
+        </div>
+      </div>
+    </SidebarInset>
+  );
+}
+
+function RealSubprojectPage() {
   const { slug } = useParams();
   const router = useRouter();
   const isMounted = useIsMounted();
@@ -47,6 +174,13 @@ export default function SubprojectPage() {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
   const [evaluationFinished, setEvaluationFinished] = useState(false);
   const [showUploader, setShowUploader] = useState(true);
+  // const [highlightCoords, setHighlightCoords] = useState<{
+  //   top: number;
+  //   left: number;
+  //   width: number;
+  //   height: number;
+  // } | null>(null);
+  // const [visible, setVisible] = useState(false);
 
   const token = sessionStorage.getItem("token");
 
@@ -65,7 +199,6 @@ export default function SubprojectPage() {
       );
       if (projectData) {
         setProject(projectData);
-        console.log("Fetched project:", projectData);
       } else {
         console.error("Failed to fetch project:", parseInt(slug as string));
       }
@@ -79,7 +212,6 @@ export default function SubprojectPage() {
         setFiles([]); // Reset files
         setEvaluationFinished(true);
         setPages(examsData);
-        console.log("Fetched exams:", examsData);
       } else {
         console.error(
           "Failed to fetch exams for project:",
@@ -90,7 +222,6 @@ export default function SubprojectPage() {
       const tasksData = await fetchTasks(token);
       if (tasksData) {
         setTasks(tasksData);
-        console.log("Fetched tasks:", tasksData);
       } else {
         console.error(
           "Failed to fetch tasks for project:",
@@ -111,8 +242,6 @@ export default function SubprojectPage() {
     const previewUrl = URL.createObjectURL(file);
     // Defer state update until after rendering is complete
     setTimeout(() => setPdfPreviewUrl(previewUrl), 0);
-    const extractedPages = pages; // Replace with actual implementation
-    console.log("Uploaded PDF pages:", extractedPages);
     setShowUploader(false); // Hide uploader after file is uploaded
   };
 
@@ -153,6 +282,16 @@ export default function SubprojectPage() {
     setIsEvaluating(false);
     setEvaluationFinished(true);
   };
+
+  // useEffect(() => {
+  //   handleHighlight();
+  //   window.addEventListener("scroll", handleHighlight);
+  //   window.addEventListener("resize", handleHighlight);
+  //   return () => {
+  //     window.removeEventListener("scroll", handleHighlight);
+  //     window.removeEventListener("resize", handleHighlight);
+  //   };
+  // }, [visible, step.selector]);
 
   if (!project)
     return (
@@ -323,4 +462,10 @@ export default function SubprojectPage() {
       </SidebarInset>
     </>
   );
+}
+
+export default function SubprojectPage() {
+  const searchParams = useSearchParams();
+  const isDemo = searchParams?.get("demo") === "true";
+  return isDemo ? <DemoSubprojectPage /> : <RealSubprojectPage />;
 }

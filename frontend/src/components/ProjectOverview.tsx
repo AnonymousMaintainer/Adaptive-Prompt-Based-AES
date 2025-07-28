@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import { Button } from "./ui/button";
 import { motion, AnimatePresence } from "motion/react";

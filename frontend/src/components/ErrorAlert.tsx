@@ -1,6 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CircleX, X } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface ErrorAlertProps {
   title?: string;

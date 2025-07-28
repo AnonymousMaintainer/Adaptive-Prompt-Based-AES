@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +51,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { User } from "../types/user";
 
 export default function RegisterPage() {
   const [id, setId] = useState("");
@@ -66,19 +67,54 @@ export default function RegisterPage() {
   const { toast } = useToast();
   const router = useRouter();
 
+  // Crude Get all "USERS"
   useEffect(() => {
-    setUsersLoading(true);
-    setTimeout(() => {
-      setUsers([
-        { id: "1", username: "Admin", createdDate: "2025-10-01" },
-        // { id: "2", username: "Bob", createdDate: "2023-10-02" },
-      ]);
-      setUsersLoading(false);
-    }, 500);
-  }, []);
+    async function loadUsers() {
+      setUsersLoading(true);
+      const token = sessionStorage.getItem("token");
+      if (!checkAuthentication(token) || !token) return;
+
+      try {
+        // const fetchedUsers = await fetchUsers(token);
+        // setUsers(
+        //   fetchedUsers.map((user: User) => ({
+        //     id: user.id.toString(),
+        //     username: user.username,
+        //     createdDate: user.created_at
+        //       ? user.created_at
+        //       : new Date().toISOString(),
+        //   }))
+        // );
+        const fetchedUsers = [
+          {
+            id: 1,
+            username: "Not Implemented Yet",
+            created_at: new Date().toISOString(),
+          },
+        ];
+        setUsers(
+          fetchedUsers.map((user: User) => ({
+            id: user.id.toString(),
+            username: user.username,
+            createdDate: user.created_at,
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        toast({
+          title: "Users loaded successfully",
+          description: `${users.length} users found.`,
+          variant: "default",
+        });
+        setUsersLoading(false);
+      }
+    }
+    loadUsers();
+  }, [toast, users.length]);
 
   const handleDelete = async (userId: string) => {
-    setUsers(users.filter((user: any) => user.id !== userId));
+    setUsers(users.filter((user) => user.id !== userId));
     toast({
       title: "User deleted successfully",
     });
@@ -138,6 +174,7 @@ export default function RegisterPage() {
                   <Dialog>
                     <DialogTrigger asChild>
                       <motion.button
+                        data-tour="register-button"
                         className="h-8"
                         whileHover={{
                           scale: 1.1,
@@ -246,7 +283,7 @@ export default function RegisterPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody className="divide-y divide-primary bg-background">
-                      {users.map((user: any) => (
+                      {users.map((user) => (
                         <TableRow key={user.id} className="h-12">
                           <TableCell className="text-center">
                             {user.id}
@@ -290,7 +327,7 @@ export default function RegisterPage() {
           {pendingDelete && (
             <AlertDialog
               open
-              onOpenChange={(open: any) => {
+              onOpenChange={(open: boolean) => {
                 if (!open) setPendingDelete(null);
               }}
             >

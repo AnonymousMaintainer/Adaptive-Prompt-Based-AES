@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -61,7 +61,6 @@ export default function ExamUploadPage() {
     section: string;
     task_id: number;
   }) => {
-    console.log("Creating project:", projectData);
     const newProject: ProjectCreate = {
       project_name: projectData.project_name,
       course_name: projectData.course_name,
@@ -98,7 +97,10 @@ export default function ExamUploadPage() {
           <CollapsibleExplanation />
           <div className="mb-4 flex justify-between items-center">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold flex items-center">
+              <CardTitle
+                data-tour="projects-title"
+                className="text-2xl font-bold flex items-center"
+              >
                 <FolderOpen className="mr-2 h-6 w-6" />
                 Project Management
               </CardTitle>
@@ -109,6 +111,7 @@ export default function ExamUploadPage() {
             <div className="flex gap-2">
               <Button
                 variant="default"
+                data-tour="projects-create"
                 className="hover:bg-accent hover:text-accent-foreground"
                 onClick={() => setIsModalOpen(true)}
               >
@@ -124,11 +127,17 @@ export default function ExamUploadPage() {
             </div>
           </div>
           <div className="px-4">
-            <ProjectOverview
-              projects={projects}
-              onSelectProject={handleSelectProject}
-              tasks={tasks}
-            />
+            {projects.length > 0 ? (
+              <ProjectOverview
+                projects={projects}
+                onSelectProject={handleSelectProject}
+                tasks={tasks}
+              />
+            ) : (
+              <div className="text-left text-card-foreground">
+                No projects available.
+              </div>
+            )}
             <CreateProjectModal
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}

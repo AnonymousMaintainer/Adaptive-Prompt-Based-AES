@@ -4,8 +4,9 @@ set -e
 
 echo "===  Starting Full CULI Deployment ==="
 
-# Optional: Check and install dependencies
-./scripts/dependency.sh
+./scripts/variable_check.sh
+
+./scripts/dependency_check.sh
 
 ./scripts/infra_initiate.sh
 

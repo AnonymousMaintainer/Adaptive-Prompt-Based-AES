@@ -16,6 +16,17 @@ def send_email_notification(to_email: str, subject: str, body: str):
         subject (str): Email subject.
         body (str): Plain text body.
     """
+    required_fields = [
+        settings.EMAIL_HOST,
+        settings.EMAIL_PORT,
+        settings.EMAIL_USER,
+        settings.EMAIL_PASS
+    ]
+
+    if not all(required_fields):
+        logger.warning("Email settings are not fully configured. Skipping email notification.")
+        return
+    
     try:
         msg = EmailMessage()
         msg["Subject"] = subject

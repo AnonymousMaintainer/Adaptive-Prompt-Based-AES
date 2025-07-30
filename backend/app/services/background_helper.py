@@ -281,8 +281,14 @@ async def evaluate_project_exams(
                 if user and user.email:
                     send_email_notification(
                         to_email=user.email,
-                        subject="✅ All Exams Evaluated",
-                        body=f"Hi {user.username},\n\nAll exams in your project '{project.project_name}' have been successfully evaluated. \n\nCheck your project for the results."
+                        subject=f"All Exams Evaluated for Project: {project.project_name}",
+                        body=(
+                            f"Dear {user.username},\n\n"
+                            f"We’re pleased to inform you that all {len(all_exams)} exams in your project \"{project.project_name}\" "
+                            f"have been successfully evaluated.\n\n"
+                            f"You can now review the results in your dashboard.\n\n"
+                            f"Thank you for using our platform.\n\n"
+                        )
                     )
         
     except Exception as e:

@@ -13,4 +13,4 @@ aws cloudformation deploy \
   --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
   --region "$REGION"
 
-echo "✅ Infrastructure deployment complete."
+echo "Infrastructure deployment complete."

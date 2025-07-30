@@ -1,5 +1,4 @@
-import os
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
 from pydantic import (
     AnyUrl,
@@ -67,9 +66,9 @@ class Settings(BaseSettings):
     RANDOM_STATE: int = 42
 
     # Email Configuration
-    EMAIL_HOST: str
-    EMAIL_PORT: str
-    EMAIL_USER: str
-    EMAIL_PASS: str
+    EMAIL_HOST: Optional[str] = None
+    EMAIL_PORT: Optional[str] = None
+    EMAIL_USER: Optional[str] = None
+    EMAIL_PASS: Optional[str] = None
     
 settings = Settings()  # type: ignore

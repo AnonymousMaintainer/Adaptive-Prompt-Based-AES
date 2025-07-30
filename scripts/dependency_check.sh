@@ -2,7 +2,7 @@
 
 set -e
 
-echo "🔍 Checking if sed is installed..."
+echo "Checking for dependencies..."
 
 # Check if sed is available
 if command -v sed >/dev/null 2>&1; then
@@ -34,5 +34,21 @@ else
     exit 1
   fi
 fi
+
+# --- Check Docker ---
+echo "Checking Docker..."
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "Docker is not installed. Please install Docker: https://docs.docker.com/get-docker/"
+  exit 1
+fi
+
+if ! docker info >/dev/null 2>&1; then
+  echo "Docker is installed but not running or the current user doesn't have permission."
+  echo "Start Docker Desktop or check Docker daemon status."
+  exit 1
+fi
+
+echo "Docker is installed and running."
 
 echo "Dependency check complete."
